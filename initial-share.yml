@@ -1,0 +1,14 @@
+---
+- name: initial share
+  hosts: initial
+  tasks:
+  - name: "restart_drand"
+    become: true
+    systemd:
+      state: restarted
+      name: drand
+      daemon_reexec: yes
+  - name: share
+    become: true
+    command:
+      cmd: "drand share --connect 151.139.184.20:8080 --tls-disable --secret-file /root/.drand/secret"

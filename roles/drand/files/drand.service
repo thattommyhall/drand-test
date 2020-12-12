@@ -1,0 +1,13 @@
+[Unit]
+Description=drand
+After=network.target
+
+[Service]
+Type=simple
+LimitNOFILE=60000
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/sbin/drand start --verbose --tls-disable --private-listen 0.0.0.0:8080
+
+[Install]
+WantedBy=cloud-init.target

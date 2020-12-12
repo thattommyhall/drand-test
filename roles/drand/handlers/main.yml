@@ -1,0 +1,6 @@
+- name: "restart_drand"
+  become: true
+  systemd:
+    state: restarted
+    name: drand
+    daemon_reexec: yes

@@ -1,0 +1,44 @@
+
+- name: Copy binary
+  notify:
+    - "restart_drand"
+  become: yes
+  copy:
+    src: files/drand
+    dest: /usr/local/sbin/drand
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Copy systemd unit
+  notify:
+    - "restart_drand"
+  become: yes
+  copy:
+    src: files/drand.service
+    dest: /etc/systemd/system/drand.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Init drand
+  notify:
+    - "restart_drand"
+  become: yes
+  command:
+    cmd: "drand generate-keypair --tls-disable {{ inventory_hostname }}:8080"
+    creates: /root/.drand/key/drand_id.private
+
+- name: Create secret file
+  become: yes
+  copy:
+    dest: /root/.drand/secret
+    mode: '0700'
+    content: 38ddt5tF2msNQedC7x66VxrHkhfHKxG3
+
+- name: Enable service
+  become: yes
+  service:
+    name: drand
+    enabled: true
+    state: started

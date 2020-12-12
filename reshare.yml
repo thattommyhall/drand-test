@@ -1,0 +1,37 @@
+---
+# - name: restart all
+#   hosts: increased
+#   tasks:
+#   - name: "restart_drand"
+#     become: true
+#     systemd:
+#       state: restarted
+#       name: drand
+#       daemon_reexec: yes
+
+# - name: transition existing
+#   hosts: initial
+#   tasks:
+#   - name: share
+#     poll: 0
+#     async: 300
+#     become: true
+#     command:
+#       cmd: "drand share --connect 151.139.184.20:8080 --tls-disable  --secret-file /root/.drand/secret --transition"
+
+- name: join new
+  hosts: extras
+  tasks:
+  - name: copy group file
+    become: true
+    copy:
+      src: files/drand_group.toml
+      dest: /root/drand_group.toml
+      owner: root
+      group: root
+      mode: '0600'
+
+  - name: share
+    become: true
+    command:
+      cmd: "drand share --connect 151.139.184.20:8080 --tls-disable --secret-file /root/.drand/secret --from /root/drand_group.toml"
